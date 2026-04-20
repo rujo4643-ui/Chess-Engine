@@ -11,50 +11,56 @@
     flex-wrap: wrap;
 
     * {
-        width: calc(100% / 8);
-        height: calc(100% / 8);
         background-color: #eeeed2;
-        background-repeat: no-repeat;
-        background-size: 600%;
     }
 
-    *:nth-child(n):nth-child(-n+8):nth-child(even),
-    *:nth-child(n + 17):nth-child(-n+24):nth-child(even),
-    *:nth-child(n + 33):nth-child(-n+40):nth-child(even),
-    *:nth-child(n + 49):nth-child(-n+56):nth-child(even),
-
-    *:nth-child(n + 9):nth-child(-n+16):nth-child(odd),
-    *:nth-child(n + 25):nth-child(-n+32):nth-child(odd),
-    *:nth-child(n + 41):nth-child(-n+48):nth-child(odd),
-    *:nth-child(n + 57):nth-child(-n+64):nth-child(odd) {
+    *:nth-child(n):nth-child(-n + 8):nth-child(even),
+    *:nth-child(n + 17):nth-child(-n + 24):nth-child(even),
+    *:nth-child(n + 33):nth-child(-n + 40):nth-child(even),
+    *:nth-child(n + 49):nth-child(-n + 56):nth-child(even),
+    *:nth-child(n + 9):nth-child(-n + 16):nth-child(odd),
+    *:nth-child(n + 25):nth-child(-n + 32):nth-child(odd),
+    *:nth-child(n + 41):nth-child(-n + 48):nth-child(odd),
+    *:nth-child(n + 57):nth-child(-n + 64):nth-child(odd) {
         background-color: #769656;
     }
+}
 
-    [class]:not([class=""]) {
-        background-image: url("../assets/pieces.png");
-    }
+.chessBoard > *, #holding {
+    width: 75px;
+    height: 75px;
+    background-repeat: no-repeat;
+    background-size: 600%;
+}
 
-    .black {
-        background-position-y: 100%;
-    }
+.chessBoard > [class]:not([class=""]), #holding {
+    background-image: url("../assets/pieces.png");
+}
 
-    .q {
-        background-position-x: 20%;
-    }
+.black {
+    background-position-y: 100%;
+}
 
-    .b {
-        background-position-x: 40%;
-    }
+.q {
+    background-position-x: 20%;
+}
 
-    .n {
-        background-position-x: 60%;
-    }
+.b {
+    background-position-x: 40%;
+}
 
-    .r {
-        background-position-x: 80%;
-    }
+.n {
+    background-position-x: 60%;
+}
 
-    .p {
-        background-position-x: 100%;
-    }
+.r {
+    background-position-x: 80%;
+}
+
+.p {
+    background-position-x: 100%;
+}
+
+#holding {
+    position: fixed;
 }
