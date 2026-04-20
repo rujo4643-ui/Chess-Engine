@@ -1,30 +1,55 @@
 let holding;
-let square;
+let selecting;
+let selectId;
 
-function hold(e) {
+function updateHolding(e) {
     if (!holding) return;
     holding.style.left = e.clientX - 75 / 2 + "px";
     holding.style.top = e.clientY - 75 / 2 + "px";
 }
 
-document.querySelectorAll(".chessBoard > *").forEach((e) => {
-    if (e.classList.length == 0) return;
+function hold(piece, event) {
+    piece.id = "holding";
 
-    e.addEventListener("mousedown", (event) => {
-        holding = e.cloneNode(true);
-        holding.id = "holding";
-        document.body.appendChild(holding);
-        hold(event);
+    holding = piece.cloneNode(true);
+    holding.style.position = "fixed";
+    holding.style.backgroundImage = 'url("../assets/pieces.png")';
 
-        e.className = "";
-        square = e;
+    holding.id = "holding";
+    document.body.appendChild(holding);
+    updateHolding(event);
+}
+
+function select(square) {
+    if (selecting) {
+        selecting.removeAttribute("style");
+        selecting.id = selectId;
+    }
+
+    selectId = square.id;
+    selecting = square;
+    selecting.style.setProperty(
+        "--pos",
+        window.getComputedStyle(selecting).backgroundPosition,
+    );
+}
+
+document.querySelectorAll(".chessBoard > *").forEach((square) => {
+    square.addEventListener("mousedown", (event) => {
+        select(square);
+        if (square.className) {
+            hold(square, event);
+        } else {
+            selecting.id = "selecting";
+        }
     });
 });
 
-document.body.addEventListener("mousemove", hold);
+document.body.addEventListener("mousemove", updateHolding);
 document.body.addEventListener("mouseup", () => {
     if (!holding) return;
-    square.className = holding.className;
     document.body.removeChild(holding);
     holding = null;
+
+    selecting.id = "selecting";
 });

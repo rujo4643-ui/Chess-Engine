@@ -1,4 +1,4 @@
-const FEN = "rnbqkbnr/pppppppp/4n3/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1".split(" ");
+const FEN = "2n2K2/p1B5/5p1r/P7/4pp1p/1Bk1N3/R1p4P/8 w - - 0 1".split(" ");
 
 const piecePlacement = FEN[0];
 const activeColor = FEN[1];

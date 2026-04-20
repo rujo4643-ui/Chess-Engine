@@ -24,17 +24,30 @@
     *:nth-child(n + 57):nth-child(-n + 64):nth-child(odd) {
         background-color: #769656;
     }
+
+    #holding, #selecting {
+        background-image: none;
+    }
+
+    #holding::before, #selecting::before {
+        content: "";
+        display: block;
+        background-color: rgba(255, 255, 0, 0.4);
+        background-position: var(--pos, '0 0');
+    }
+
+    [class]:not([class=""]), #selecting[class]::before {
+        background-image: url("../assets/pieces.png");
+    }
 }
 
-.chessBoard > *, #holding {
+#holding,
+.chessBoard *,
+.chessBoard *::before {
     width: 75px;
     height: 75px;
     background-repeat: no-repeat;
     background-size: 600%;
-}
-
-.chessBoard > [class]:not([class=""]), #holding {
-    background-image: url("../assets/pieces.png");
 }
 
 .black {
@@ -59,8 +72,4 @@
 
 .p {
     background-position-x: 100%;
-}
-
-#holding {
-    position: fixed;
 }
