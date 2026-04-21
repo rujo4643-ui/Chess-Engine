@@ -8,7 +8,7 @@ function updateHolding(e) {
 }
 
 function hold(event) {
-    selecting.setAttribute("piece", "holding");
+    selecting.setAttribute("status", "holding");
 
     holding = selecting.cloneNode(true);
     holding.style.position = "fixed";
@@ -19,27 +19,39 @@ function hold(event) {
     updateHolding(event);
 }
 
-function move() {
-    console.log("Moved");
+function isMoveable(square) {
+    if (square.getAttribute("move")) {
+        square.className = selecting.className;
+
+        const prevMove = document.querySelector('[moved*="now"]');
+        if (prevMove) prevMove.setAttribute("moved", "ago");
+
+        selecting.removeAttribute("piece");
+        selecting.removeAttribute("class");
+        selecting.removeAttribute("moved");
+        square.setAttribute("moved", `${square.getAttribute("move")} now`);
+
+        select();
+        return true;
+    } else return false;
 }
 
 function showLegalMove() {
     const piece = selecting.className.slice(-1);
-    const color = selecting.className[0];
-
-    getMoveable[piece](selecting.id, color);
+    getMoveable[piece](selecting);
 }
 
 function select(square) {
     if (selecting) {
-        selecting.removeAttribute("piece");
+        selecting.removeAttribute("status");
         selecting.removeAttribute("style");
 
-        document.querySelectorAll("[square]").forEach((square, index) => {
-            square.removeAttribute("square");
+        document.querySelectorAll("[move]").forEach((square, index) => {
+            square.removeAttribute("move");
         });
     }
 
+    if (!square) return;
     selecting = square;
     selecting.style.setProperty(
         "--pos",
@@ -49,28 +61,24 @@ function select(square) {
 
 document.querySelectorAll(".chessBoard > *").forEach((square) => {
     square.addEventListener("mousedown", (event) => {
-        if (event.target.getAttribute("square")) {
-            move();
+        if (isMoveable(square)) return;
+
+        select(square);
+        if (square.className) {
+            hold(event);
+            showLegalMove();
         } else {
-            select(square);
-            if (square.className) {
-                hold(event);
-                showLegalMove();
-            } else {
-                selecting.setAttribute("piece", "selecting");
-            }
+            selecting.setAttribute("status", "selecting");
         }
     });
 });
 
 document.body.addEventListener("mousemove", updateHolding);
-document.body.addEventListener("mouseup", (e) => {
+document.body.addEventListener("mouseup", (event) => {
     if (!holding) return;
-    selecting.setAttribute("piece", "selecting");
+    selecting.setAttribute("status", "selecting");
     document.body.removeChild(holding);
     holding = null;
 
-    if (e.target.getAttribute("square")) {
-        move();
-    }
+    isMoveable(event.target);
 });
