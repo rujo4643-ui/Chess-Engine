@@ -13,6 +13,7 @@ function hold(event) {
     holding = selecting.cloneNode(true);
     holding.style.position = "fixed";
     holding.style.backgroundImage = 'url("assets/pieces.png")';
+
     holding.id = "holding";
     document.body.appendChild(holding);
     updateHolding(event);

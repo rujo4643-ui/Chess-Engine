@@ -66,8 +66,12 @@
 
     [class]:not([class=""]):not([piece]),
     [piece="selecting"][class]::before {
-        background-image: url("assets/pieces.png");
+        background-image: url("../assets/pieces.png");
     }
+}
+
+#holding {
+    pointer-events: none;
 }
 
 #holding {
