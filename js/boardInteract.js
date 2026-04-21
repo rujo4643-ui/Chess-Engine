@@ -1,6 +1,5 @@
 let holding;
 let selecting;
-let selectId;
 
 function updateHolding(e) {
     if (!holding) return;
@@ -8,25 +7,38 @@ function updateHolding(e) {
     holding.style.top = e.clientY - 75 / 2 + "px";
 }
 
-function hold(piece, event) {
-    piece.id = "holding";
+function hold(event) {
+    selecting.setAttribute("piece", "holding");
 
-    holding = piece.cloneNode(true);
+    holding = selecting.cloneNode(true);
     holding.style.position = "fixed";
-    holding.style.backgroundImage = 'url("../assets/pieces.png")';
-
+    holding.style.backgroundImage = 'url("assets/pieces.png")';
     holding.id = "holding";
     document.body.appendChild(holding);
     updateHolding(event);
 }
 
+function move() {
+    console.log("Moved");
+}
+
+function showLegalMove() {
+    const piece = selecting.className.slice(-1);
+    const color = selecting.className[0];
+
+    getMoveable[piece](selecting.id, color);
+}
+
 function select(square) {
     if (selecting) {
+        selecting.removeAttribute("piece");
         selecting.removeAttribute("style");
-        selecting.id = selectId;
+
+        document.querySelectorAll("[square]").forEach((square, index) => {
+            square.removeAttribute("square");
+        });
     }
 
-    selectId = square.id;
     selecting = square;
     selecting.style.setProperty(
         "--pos",
@@ -36,20 +48,28 @@ function select(square) {
 
 document.querySelectorAll(".chessBoard > *").forEach((square) => {
     square.addEventListener("mousedown", (event) => {
-        select(square);
-        if (square.className) {
-            hold(square, event);
+        if (event.target.getAttribute("square")) {
+            move();
         } else {
-            selecting.id = "selecting";
+            select(square);
+            if (square.className) {
+                hold(event);
+                showLegalMove();
+            } else {
+                selecting.setAttribute("piece", "selecting");
+            }
         }
     });
 });
 
 document.body.addEventListener("mousemove", updateHolding);
-document.body.addEventListener("mouseup", () => {
+document.body.addEventListener("mouseup", (e) => {
     if (!holding) return;
+    selecting.setAttribute("piece", "selecting");
     document.body.removeChild(holding);
     holding = null;
 
-    selecting.id = "selecting";
+    if (e.target.getAttribute("square")) {
+        move();
+    }
 });

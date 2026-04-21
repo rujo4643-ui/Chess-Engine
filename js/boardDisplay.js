@@ -1,4 +1,4 @@
-const FEN = "2n2K2/p1B5/5p1r/P7/4pp1p/1Bk1N3/R1p4P/8 w - - 0 1".split(" ");
+const FEN = "rnbqkbnr/8/8/8/8/8/8/RNBQKBNR w KQkq - 0 1".split(" ");
 
 const piecePlacement = FEN[0];
 const activeColor = FEN[1];
@@ -24,7 +24,7 @@ for (let y = 0; y < 8; y++) {
         if (isNaN(empty)) {
             const squareElement = document.getElementById(`${x}${y + 1}`);
             squareElement.classList.add(
-                placement === placement.toUpperCase() ? "white" : "black"
+                placement === placement.toUpperCase() ? "wh" : "bl"
             );
 
             squareElement.classList.add(placement.toLowerCase());

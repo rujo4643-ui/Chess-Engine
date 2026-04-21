@@ -25,20 +25,53 @@
         background-color: #769656;
     }
 
-    #holding, #selecting {
-        background-image: none;
-    }
-
-    #holding::before, #selecting::before {
+    [piece]::before {
         content: "";
         display: block;
         background-color: rgba(255, 255, 0, 0.4);
-        background-position: var(--pos, '0 0');
+        background-position: var(--pos, "0 0");
     }
 
-    [class]:not([class=""]), #selecting[class]::before {
-        background-image: url("../assets/pieces.png");
+    [square] {
+        position: relative;
     }
+
+    [square="moveable"]::before {
+        content: "";
+        display: block;
+        width: 35%;
+        height: 35%;
+        border-radius: 100%;
+        background-color: rgba(0, 0, 0, 0.15);
+
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    [square="capturable"]::before {
+        content: "";
+        display: block;
+        width: calc(100% - 10px);
+        height: calc(100% - 10px);
+        border-radius: 100%;
+        border: 5px solid rgba(0, 0, 0, 0.15);
+
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    [class]:not([class=""]):not([piece]),
+    [piece="selecting"][class]::before {
+        background-image: url("assets/pieces.png");
+    }
+}
+
+#holding {
+    pointer-events: none;
 }
 
 #holding,
@@ -50,7 +83,7 @@
     background-size: 600%;
 }
 
-.black {
+.bl {
     background-position-y: 100%;
 }
 
