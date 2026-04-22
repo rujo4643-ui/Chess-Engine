@@ -29,9 +29,7 @@ const longOffset = (pos, color, moveDirections) => {
             } else if (square.className[0] != color) {
                 square.setAttribute("move", "capture");
                 break;
-            } else {
-                break;
-            }
+            } else break;
         }
     }
 };
@@ -74,7 +72,7 @@ const getMoveable = {
                     nextSquare.className[0] != color &&
                     nextSquare.getAttribute("moved") == "double now"
                 ) {
-                    square.setAttribute("move", "en passant");
+                    square.setAttribute("move", `enpassant ${nextSquare.id}`);
                 }
             } else if (!square.className) {
                 if (i != 3) {
@@ -89,6 +87,7 @@ const getMoveable = {
     k: (piece) => {
         const pos = piece.id;
         const color = piece.className[0];
+
         fixedOffset(pos, color, [
             [-1, -1],
             [0, -1],
@@ -99,6 +98,49 @@ const getMoveable = {
             [0, 1],
             [1, 1],
         ]);
+
+        if (piece.getAttribute("moved")) return;
+
+        const castle = [
+            [2, 0],
+            [-2, 0],
+        ];
+
+        for (i in castle) {
+            const x = parseInt(pos[0]) + castle[i][0];
+            const square = document.getElementById(`${x}${pos[1]}`);
+
+            const rookX = castle[i][0] > 0 ? 8 : 1;
+            const rook = document.getElementById(`${rookX}${pos[1]}`);
+
+            if (
+                !rook ||
+                rook.className.slice(-1) != "r" ||
+                rook.getAttribute("moved")
+            )
+                continue;
+
+            let castlable = true;
+            for (
+                let xCheck = pos[0];
+                rookX == 8 ? xCheck < 8 : xCheck > 1;
+                rookX == 8 ? xCheck++ : xCheck--
+            ) {
+                if (xCheck == pos[0]) continue;
+                const castleSquare = document.getElementById(
+                    `${xCheck}${pos[1]}`,
+                );
+                if (castleSquare && castleSquare.className) {
+                    castlable = false;
+                }
+            }
+
+            if (!castlable) continue;
+            square.setAttribute(
+                "move",
+                `castle ${x + (rookX == 8 ? -1 : 1)}${pos[1]} ${rookX}${pos[1]}`,
+            );
+        }
     },
     n: (piece) => {
         const pos = piece.id;

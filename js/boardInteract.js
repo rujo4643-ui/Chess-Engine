@@ -23,13 +23,29 @@ function isMoveable(square) {
     if (square.getAttribute("move")) {
         square.className = selecting.className;
 
-        const prevMove = document.querySelector('[moved*="now"]');
-        if (prevMove) prevMove.setAttribute("moved", "ago");
+        document.querySelectorAll('[moved*="now"]').forEach((e) => {
+            e.setAttribute("moved", "ago");
+        });
 
-        selecting.removeAttribute("piece");
+        const moveInfo = square.getAttribute("move").split(" ");
+        square.setAttribute("moved", `${moveInfo[0]} now`);
+
+        if (moveInfo[0] == "enpassant") {
+            const pawn = document.getElementById(moveInfo[1]);
+            pawn.removeAttribute("moved");
+            pawn.removeAttribute("class");
+        } else if (moveInfo[0] == "castle") {
+            const rook = document.getElementById(moveInfo[2]);
+            rook.removeAttribute("moved");
+            rook.removeAttribute("class");
+
+            const rookSquare = document.getElementById(moveInfo[1]);
+            rookSquare.className = `${square.className.slice(0, 2)} r`;
+            rookSquare.setAttribute("moved", "castle now");
+        }
+
         selecting.removeAttribute("class");
         selecting.removeAttribute("moved");
-        square.setAttribute("moved", `${square.getAttribute("move")} now`);
 
         select();
         return true;

@@ -36,7 +36,7 @@
         position: relative;
     }
 
-    [move="normal"]::before, [move="double"]::before {
+    [move="normal"]::before, [move="double"]::before, [move*="castle"]::before {
         content: "";
         display: block;
         width: 35%;
@@ -50,7 +50,7 @@
         transform: translate(-50%, -50%);
     }
 
-    [move="capture"]::before, [move="en passant"]::before {
+    [move="capture"]::before, [move*="enpassant"]::before {
         content: "";
         display: block;
         width: calc(100% - 10px);
