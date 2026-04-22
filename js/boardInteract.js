@@ -28,6 +28,8 @@ document.querySelectorAll(".pieceList *").forEach((e) => {
 
         document.querySelector(".pieceList").style.display = "none";
         document.querySelector(".chessBoard").classList.remove("disable");
+
+        new Audio("assets/promote.mp3").play();
     });
 });
 
@@ -53,10 +55,18 @@ function isMoveable(square) {
         const moveInfo = square.getAttribute("move").split(" ");
         square.setAttribute("moved", `${moveInfo[0]} now`);
 
+        if (moveInfo[0] == "normal" || moveInfo[0] == "double") {
+            new Audio("assets/move-self.mp3").play();
+        } else if (moveInfo[0] == "capture" || moveInfo[0] == "enpassant") {
+            new Audio("assets/capture.mp3").play();
+        }
+
         if (moveInfo[0] == "enpassant") {
             const pawn = document.getElementById(moveInfo[1]);
             pawn.removeAttribute("moved");
             pawn.removeAttribute("class");
+
+            new Audio("assets/move-self.mp3").play();
         } else if (moveInfo[0] == "castle") {
             const rook = document.getElementById(moveInfo[2]);
             rook.removeAttribute("moved");
@@ -65,7 +75,10 @@ function isMoveable(square) {
             const rookSquare = document.getElementById(moveInfo[1]);
             rookSquare.className = `${square.className.slice(0, 2)} r`;
             rookSquare.setAttribute("moved", "castle now");
+
+            new Audio("assets/castle.mp3").play();
         } else if (moveInfo[0] == "promote") {
+            new Audio("assets/move-self.mp3");
             promote(square);
         }
 
