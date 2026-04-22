@@ -36,7 +36,9 @@
         position: relative;
     }
 
-    [move="normal"]::before, [move="double"]::before, [move*="castle"]::before {
+    [move*="normal"]::before,
+    [move*="double"]::before,
+    [move*="castle"]::before {
         content: "";
         display: block;
         width: 35%;
@@ -50,7 +52,8 @@
         transform: translate(-50%, -50%);
     }
 
-    [move="capture"]::before, [move*="enpassant"]::before {
+    [move*="capture"]::before,
+    [move*="enpassant"]::before {
         content: "";
         display: block;
         width: calc(100% - 10px);
@@ -70,15 +73,43 @@
     }
 }
 
-#holding {
-    pointer-events: none;
+.pieceList {
+    display: none;
+    position: absolute;
+    background-color: rgb(241, 241, 241);
+
+    width: 200px;
+    height: 200px;
+
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.5) 2px 2px 10px;
+
+    align-content: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+
+    * {
+        background-image: url("../assets/pieces.png");
+    }
+
+    *:hover {
+        transform: scale(1.2) rotateZ(5deg);
+        transition: all linear 0.1s;
+    }
+
+    *:active {
+        transform: scale(1.1) rotateZ(5deg);
+        transition: all ease-in 0.05s;
+    }
 }
 
-#holding {
+#holding, .disable * {
     pointer-events: none;
 }
 
 #holding,
+.pieceList *,
 .chessBoard *,
 .chessBoard *::before {
     width: 75px;

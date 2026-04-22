@@ -82,6 +82,10 @@ const getMoveable = {
                     square.setAttribute("move", "double");
                 }
             }
+
+            if (square.getAttribute("move") && (color == "w" ? y == 1 : y == 8)) {
+                square.setAttribute("move", "promote " + square.getAttribute("move"));
+            }
         }
     },
     k: (piece) => {

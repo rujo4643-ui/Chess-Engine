@@ -1,5 +1,6 @@
 let holding;
 let selecting;
+let promoting;
 
 function updateHolding(e) {
     if (!holding) return;
@@ -17,6 +18,28 @@ function hold(event) {
     holding.id = "holding";
     document.body.appendChild(holding);
     updateHolding(event);
+}
+
+document.querySelectorAll(".pieceList *").forEach((e) => {
+    e.addEventListener("mousedown", () => {
+        if (!promoting) return;
+        promoting.className = e.className;
+        promoting = null;
+
+        document.querySelector(".pieceList").style.display = "none";
+        document.querySelector(".chessBoard").classList.remove("disable");
+    });
+});
+
+function promote(square) {
+    promoting = square;
+    document.querySelector(".chessBoard").classList.add("disable");
+
+    document.querySelector(".pieceList").style.display = "flex";
+    document.querySelectorAll(".pieceList *").forEach((e) => {
+        e.className =
+            square.className.slice(0, 2) + " " + e.className.slice(-1);
+    });
 }
 
 function isMoveable(square) {
@@ -42,6 +65,8 @@ function isMoveable(square) {
             const rookSquare = document.getElementById(moveInfo[1]);
             rookSquare.className = `${square.className.slice(0, 2)} r`;
             rookSquare.setAttribute("moved", "castle now");
+        } else if (moveInfo[0] == "promote") {
+            promote(square);
         }
 
         selecting.removeAttribute("class");
@@ -62,7 +87,7 @@ function select(square) {
         selecting.removeAttribute("status");
         selecting.removeAttribute("style");
 
-        document.querySelectorAll("[move]").forEach((square, index) => {
+        document.querySelectorAll("[move]").forEach((square) => {
             square.removeAttribute("move");
         });
     }
