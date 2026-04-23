@@ -47,6 +47,10 @@ function promote(square) {
 function isMoveable(square) {
     if (square.getAttribute("move")) {
         square.className = selecting.className;
+        document.querySelector(".chessBoard").style.flexWrap =
+            selecting.className[0] == "w" ? "wrap-reverse" : "wrap";
+        document.querySelector(".chessBoard").style.direction =
+            selecting.className[0] == "w" ? "rtl" : "ltr";
 
         document.querySelectorAll('[moved*="now"]').forEach((e) => {
             e.setAttribute("moved", "ago");
