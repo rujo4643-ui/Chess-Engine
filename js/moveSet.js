@@ -1,4 +1,4 @@
-const fixedOffset = (pos, color, moveOffsets) => {
+const fixedOffset = (pos, color, moveOffsets, isChecking) => {
     for (i in moveOffsets) {
         const x = parseInt(pos[0]) + moveOffsets[i][0];
         const y = parseInt(pos[1]) + moveOffsets[i][1];
@@ -6,14 +6,23 @@ const fixedOffset = (pos, color, moveOffsets) => {
 
         if (!square) continue;
         if (!square.className) {
+            if (isChecking) continue;
             square.setAttribute("move", "normal");
         } else if (square.className[0] != color) {
+            if (isChecking) {
+                if (isChecking.includes(square.className.slice(-1))) {
+                    return true;
+                } else {
+                    continue;
+                }
+            }
+
             square.setAttribute("move", "capture");
         }
     }
 };
 
-const longOffset = (pos, color, moveDirections) => {
+const longOffset = (pos, color, moveDirections, isChecking) => {
     for (i in moveDirections) {
         let offset = 0;
 
@@ -25,13 +34,33 @@ const longOffset = (pos, color, moveDirections) => {
 
             if (!square) break;
             if (!square.className) {
+                if (isChecking) continue;
                 square.setAttribute("move", "normal");
             } else if (square.className[0] != color) {
+                if (isChecking) {
+                    if (isChecking.includes(square.className.slice(-1))) {
+                        return true;
+                    } else {
+                        break;
+                    }
+                }
+
                 square.setAttribute("move", "capture");
                 break;
+            } else if (isChecking && square.className.slice(-1) == "k") {
+                continue;
             } else break;
         }
     }
+};
+
+const isAttacked = (pos, color) => {
+    return (
+        longOffset(pos, color, bishop, "q b") ||
+        longOffset(pos, color, rook, "q r") ||
+        fixedOffset(pos, color, knight, "n") ||
+        fixedOffset(pos, color, king, "k")
+    );
 };
 
 const getMoveable = {
@@ -41,20 +70,7 @@ const getMoveable = {
         const moved = piece.getAttribute("moved");
         let moveable = false;
 
-        const moveOffsets =
-            color == "w"
-                ? [
-                      [-1, -1],
-                      [0, -1],
-                      [1, -1],
-                      [0, -2],
-                  ]
-                : [
-                      [-1, 1],
-                      [0, 1],
-                      [1, 1],
-                      [0, 2],
-                  ];
+        const moveOffsets = color == "w" ? whitePawn : blackPawn;
 
         for (i in moveOffsets) {
             const x = parseInt(pos[0]) + moveOffsets[i][0];
@@ -83,8 +99,14 @@ const getMoveable = {
                 }
             }
 
-            if (square.getAttribute("move") && (color == "w" ? y == 1 : y == 8)) {
-                square.setAttribute("move", "promote " + square.getAttribute("move"));
+            if (
+                square.getAttribute("move") &&
+                (color == "w" ? y == 1 : y == 8)
+            ) {
+                square.setAttribute(
+                    "move",
+                    "promote " + square.getAttribute("move"),
+                );
             }
         }
     },
@@ -92,19 +114,12 @@ const getMoveable = {
         const pos = piece.id;
         const color = piece.className[0];
 
-        fixedOffset(pos, color, [
-            [-1, -1],
-            [0, -1],
-            [1, -1],
-            [-1, 0],
-            [1, 0],
-            [-1, 1],
-            [0, 1],
-            [1, 1],
-        ]);
+        fixedOffset(pos, color, king);
+        document.querySelectorAll("[move]").forEach((e) => {
+            if (isAttacked(e.id, color)) e.removeAttribute("move");
+        });
 
         if (piece.getAttribute("moved")) return;
-
         const castle = [
             [2, 0],
             [-2, 0],
@@ -125,6 +140,7 @@ const getMoveable = {
                 continue;
 
             let castlable = true;
+
             for (
                 let xCheck = pos[0];
                 rookX == 8 ? xCheck < 8 : xCheck > 1;
@@ -134,7 +150,11 @@ const getMoveable = {
                 const castleSquare = document.getElementById(
                     `${xCheck}${pos[1]}`,
                 );
-                if (castleSquare && castleSquare.className) {
+                if (
+                    castleSquare &&
+                    (castleSquare.className ||
+                        isAttacked(xCheck + pos[1], color))
+                ) {
                     castlable = false;
                 }
             }
@@ -149,39 +169,70 @@ const getMoveable = {
     n: (piece) => {
         const pos = piece.id;
         const color = piece.className[0];
-        fixedOffset(pos, color, [
-            [-1, -2],
-            [1, -2],
-            [2, -1],
-            [2, 1],
-            [-1, 2],
-            [1, 2],
-            [-2, -1],
-            [-2, 1],
-        ]);
+        fixedOffset(pos, color, knight);
     },
     b: (piece) => {
         const pos = piece.id;
         const color = piece.className[0];
-        longOffset(pos, color, [
-            [-1, -1],
-            [1, -1],
-            [-1, 1],
-            [1, 1],
-        ]);
+        longOffset(pos, color, bishop);
     },
     r: (piece) => {
         const pos = piece.id;
         const color = piece.className[0];
-        longOffset(pos, color, [
-            [-1, 0],
-            [1, 0],
-            [0, -1],
-            [0, 1],
-        ]);
+        longOffset(pos, color, rook);
     },
     q: (piece) => {
         getMoveable["b"](piece);
         getMoveable["r"](piece);
     },
 };
+
+const king = [
+    [-1, -1],
+    [0, -1],
+    [1, -1],
+    [-1, 0],
+    [1, 0],
+    [-1, 1],
+    [0, 1],
+    [1, 1],
+];
+
+const whitePawn = [
+    [-1, -1],
+    [0, -1],
+    [1, -1],
+    [0, -2],
+];
+
+const blackPawn = [
+    [-1, 1],
+    [0, 1],
+    [1, 1],
+    [0, 2],
+];
+
+const bishop = [
+    [-1, -1],
+    [1, -1],
+    [-1, 1],
+    [1, 1],
+];
+
+const rook = [
+    [-1, 0],
+    [1, 0],
+    [0, -1],
+    [0, 1],
+];
+
+const knight = [
+    [-1, -2],
+    [1, -2],
+    [2, -1],
+    [2, 1],
+    [-1, 2],
+    [1, 2],
+    [-2, -1],
+    [-2, 1],
+];
