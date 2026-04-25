@@ -2,6 +2,11 @@ let holding;
 let selecting;
 let promoting;
 
+const capture = new Audio("assets/capture.mp3");
+const castle = new Audio("assets/castle.mp3");
+const move = new Audio("assets/move-self.mp3");
+const promoteSFX = new Audio("assets/promote.mp3");
+
 function updateHolding(e) {
     if (!holding) return;
     holding.style.left = e.clientX - 75 / 2 + "px";
@@ -29,7 +34,8 @@ document.querySelectorAll(".pieceList *").forEach((e) => {
         document.querySelector(".pieceList").style.display = "none";
         document.querySelector(".chessBoard").classList.remove("disable");
 
-        new Audio("assets/promote.mp3").play();
+        promoteSFX.currentTime = 0;
+        promoteSFX.play();
     });
 });
 
@@ -56,21 +62,25 @@ function isMoveable(square) {
             e.setAttribute("moved", "ago");
         });
 
+        document.querySelectorAll('[moved="from"]').forEach((e) => {
+            e.removeAttribute("moved");
+        });
+
         const moveInfo = square.getAttribute("move").split(" ");
         square.setAttribute("moved", `${moveInfo[0]} now`);
 
         if (moveInfo[0] == "normal" || moveInfo[0] == "double") {
-            new Audio("assets/move-self.mp3").play();
+            move.currentTime = 0;
+            move.play();
         } else if (moveInfo[0] == "capture" || moveInfo[0] == "enpassant") {
-            new Audio("assets/capture.mp3").play();
+            capture.currentTime = 0;
+            capture.play();
         }
 
         if (moveInfo[0] == "enpassant") {
             const pawn = document.getElementById(moveInfo[1]);
             pawn.removeAttribute("moved");
             pawn.removeAttribute("class");
-
-            new Audio("assets/move-self.mp3").play();
         } else if (moveInfo[0] == "castle") {
             const rook = document.getElementById(moveInfo[2]);
             rook.removeAttribute("moved");
@@ -80,14 +90,15 @@ function isMoveable(square) {
             rookSquare.className = `${square.className.slice(0, 2)} r`;
             rookSquare.setAttribute("moved", "castle now");
 
-            new Audio("assets/castle.mp3").play();
+            castle.currentTime = 0;
+            castle.play();
         } else if (moveInfo[0] == "promote") {
             new Audio("assets/move-self.mp3");
             promote(square);
         }
 
         selecting.removeAttribute("class");
-        selecting.removeAttribute("moved");
+        selecting.setAttribute("moved", "from");
 
         select();
         return true;
@@ -102,8 +113,6 @@ function showLegalMove() {
 function select(square) {
     if (selecting) {
         selecting.removeAttribute("status");
-        selecting.removeAttribute("style");
-
         document.querySelectorAll("[move]").forEach((square) => {
             square.removeAttribute("move");
         });
@@ -111,10 +120,6 @@ function select(square) {
 
     if (!square) return;
     selecting = square;
-    selecting.style.setProperty(
-        "--pos",
-        window.getComputedStyle(selecting).backgroundPosition,
-    );
 }
 
 document.querySelectorAll(".chessBoard > *").forEach((square) => {
@@ -125,8 +130,6 @@ document.querySelectorAll(".chessBoard > *").forEach((square) => {
         if (square.className) {
             hold(event);
             showLegalMove();
-        } else {
-            selecting.setAttribute("status", "selecting");
         }
     });
 });
@@ -135,6 +138,7 @@ document.body.addEventListener("mousemove", updateHolding);
 document.body.addEventListener("mouseup", (event) => {
     if (!holding) return;
     selecting.setAttribute("status", "selecting");
+
     document.body.removeChild(holding);
     holding = null;
 

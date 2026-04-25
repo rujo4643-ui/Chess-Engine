@@ -9,8 +9,13 @@ const fullMove = FEN[5];
 
 for (let i = 0; i < 64; i++) {
     const div = document.createElement("div");
-    div.id = `${i % 8 + 1}${Math.floor(i / 8) + 1}`;
+    div.id = `${(i % 8) + 1}${Math.floor(i / 8) + 1}`;
     document.querySelector(".chessBoard").appendChild(div);
+
+    const bg = window.getComputedStyle(div).backgroundColor;
+    if (bg == "rgb(118, 150, 86)") {
+        div.style.setProperty("--highlight", "#adbf5e");
+    }
 }
 
 const rows = piecePlacement.split("/");
@@ -24,7 +29,7 @@ for (let y = 0; y < 8; y++) {
         if (isNaN(empty)) {
             const squareElement = document.getElementById(`${x}${y + 1}`);
             squareElement.classList.add(
-                placement === placement.toUpperCase() ? "wh" : "bl"
+                placement === placement.toUpperCase() ? "wh" : "bl",
             );
 
             squareElement.classList.add(placement.toLowerCase());

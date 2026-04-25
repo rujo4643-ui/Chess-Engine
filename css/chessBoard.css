@@ -14,26 +14,23 @@
         background-color: #eeeed2;
     }
 
-    *:nth-child(n):nth-child(-n + 8):nth-child(even),
-    *:nth-child(n + 17):nth-child(-n + 24):nth-child(even),
-    *:nth-child(n + 33):nth-child(-n + 40):nth-child(even),
-    *:nth-child(n + 49):nth-child(-n + 56):nth-child(even),
-    *:nth-child(n + 9):nth-child(-n + 16):nth-child(odd),
-    *:nth-child(n + 25):nth-child(-n + 32):nth-child(odd),
-    *:nth-child(n + 41):nth-child(-n + 48):nth-child(odd),
-    *:nth-child(n + 57):nth-child(-n + 64):nth-child(odd) {
+    *:nth-child(n):nth-child(-n + 8):nth-child(even):not([status]):not([moved*="now"]):not([moved="from"]),
+    *:nth-child(n + 17):nth-child(-n + 24):nth-child(even):not([status]):not([moved*="now"]):not([moved="from"]),
+    *:nth-child(n + 33):nth-child(-n + 40):nth-child(even):not([status]):not([moved*="now"]):not([moved="from"]),
+    *:nth-child(n + 49):nth-child(-n + 56):nth-child(even):not([status]):not([moved*="now"]):not([moved="from"]),
+    *:nth-child(n + 9):nth-child(-n + 16):nth-child(odd):not([status]):not([moved*="now"]):not([moved="from"]),
+    *:nth-child(n + 25):nth-child(-n + 32):nth-child(odd):not([status]):not([moved*="now"]):not([moved="from"]),
+    *:nth-child(n + 41):nth-child(-n + 48):nth-child(odd):not([status]):not([moved*="now"]):not([moved="from"]),
+    *:nth-child(n + 57):nth-child(-n + 64):nth-child(odd):not([status]):not([moved*="now"]):not([moved="from"]) {
         background-color: #769656;
-    }
-
-    [status]::before {
-        content: "";
-        display: block;
-        background-color: rgba(255, 255, 0, 0.4);
-        background-position: var(--pos, "0 0");
     }
 
     [move] {
         position: relative;
+    }
+
+    [status], [moved*="now"], [moved="from"] {
+        background-color: var(--highlight, #e3e383);
     }
 
     [move*="normal"]::before,
@@ -67,8 +64,7 @@
         transform: translate(-50%, -50%);
     }
 
-    [class]:not([class=""]):not([status]),
-    [status="selecting"][class]::before {
+    [class]:not([class=""]):not([status="holding"]) {
         background-image: url("../assets/pieces.png");
     }
 }
@@ -104,7 +100,8 @@
     }
 }
 
-#holding, .disable * {
+#holding,
+.disable * {
     pointer-events: none;
 }
 
